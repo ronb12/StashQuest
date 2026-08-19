@@ -84,6 +84,33 @@ struct YouView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+
+                Section("Legal & Support") {
+                    Link(destination: LegalDocuments.privacyPolicyURL) {
+                        Label("Privacy Policy", systemImage: "hand.raised.fill")
+                    }
+
+                    Link(destination: LegalDocuments.termsOfServiceURL) {
+                        Label("Terms of Service", systemImage: "doc.text.fill")
+                    }
+
+                    Link(destination: LegalDocuments.supportURL) {
+                        Label("Support", systemImage: "questionmark.circle.fill")
+                    }
+
+                    Link(destination: URL(string: "mailto:\(LegalDocuments.contactEmail)")!) {
+                        Label("Email support", systemImage: "envelope.fill")
+                    }
+                }
+
+                Section {
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text("1.0")
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
             .navigationTitle("You")
             .sheet(isPresented: $showAddProfile) {
@@ -141,11 +168,12 @@ struct StampGridView: View {
 
     var body: some View {
         LazyVGrid(columns: columns, spacing: 12) {
-            ForEach(stamps, id: \.id) { stamp in
+            ForEach(Array(stamps.enumerated()), id: \.element.id) { index, stamp in
                 VStack(spacing: 6) {
                     Image(systemName: "seal.fill")
                         .font(.title2)
                         .foregroundStyle(.orange)
+                        .symbolEffect(.bounce, value: stamp.id)
                     if let challenge = ChallengeCatalog.challenge(id: stamp.challengeId) {
                         Text(challenge.name)
                             .font(.caption2)
@@ -161,6 +189,7 @@ struct StampGridView: View {
                 .frame(maxWidth: .infinity)
                 .padding(8)
                 .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
+                .staggeredAppear(index: index)
             }
         }
         .padding(.vertical, 4)
