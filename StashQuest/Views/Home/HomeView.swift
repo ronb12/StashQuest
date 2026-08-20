@@ -435,9 +435,19 @@ struct ParentMatchRow: View {
     let onMatched: (Double) -> Void
 
     @State private var matchPressed = false
+    @State private var isMatching = false
 
     private var remaining: Int {
         ParentMatchRules.remainingWeeklyMatches(for: kid.id, entries: entries)
+    }
+
+    private var canMatch: Bool {
+        !isMatching && remaining > 0 && ParentMatchRules.entryEligibleForMatch(
+            kidEntry,
+            entries: entries,
+            activeChallenges: activeChallenges,
+            profiles: profiles
+        )
     }
 
     var body: some View {
@@ -461,6 +471,7 @@ struct ParentMatchRow: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.orange)
+                .disabled(!canMatch)
                 .accessibilityIdentifier("parentMatchFullButton")
 
                 Button("Half") {
@@ -468,6 +479,7 @@ struct ParentMatchRow: View {
                 }
                 .buttonStyle(.bordered)
                 .tint(.orange)
+                .disabled(!canMatch)
                 .accessibilityIdentifier("parentMatchHalfButton")
             }
         }
@@ -475,15 +487,12 @@ struct ParentMatchRow: View {
         .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
         .scaleEffect(matchPressed ? 0.98 : 1)
         .transition(.scale.combined(with: .opacity))
+        .opacity(isMatching ? 0.7 : 1)
     }
 
     private func performMatch(fraction: Double) {
-        guard ParentMatchRules.entryEligibleForMatch(
-            kidEntry,
-            entries: entries,
-            activeChallenges: activeChallenges,
-            profiles: profiles
-        ), remaining > 0 else { return }
+        guard canMatch else { return }
+        isMatching = true
 
         withAnimation(AppAnimations.snappy) { matchPressed = true }
         HapticFeedback.success()
@@ -503,8 +512,12 @@ struct ParentMatchRow: View {
             isParentMatch: true
         )
         modelContext.insert(matchEntry)
-        modelContext.commitSave()
-        onMatched(amount)
+        if modelContext.commitSave() {
+            onMatched(amount)
+        } else {
+            modelContext.rollback()
+            isMatching = false
+        }
     }
 }
 

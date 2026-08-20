@@ -12,11 +12,11 @@ struct YouView: View {
     @State private var showAddProfile = false
     @State private var newProfileName = ""
     @State private var newProfileKind: ProfileKind = .adult
-    @State private var editingProfile: Profile?
+    @State private var editRequest: EditProfileRequest?
     @State private var remindersDenied = false
-    @State private var exportURL: URL?
-    @State private var showExportSheet = false
+    @State private var exportItem: ExportShareItem?
     @State private var exportError: String?
+    @State private var saveError: String?
 
     var body: some View {
         NavigationStack {
@@ -31,7 +31,7 @@ struct YouView: View {
                 Section("Profiles") {
                     ForEach(profiles, id: \.id) { profile in
                         Button {
-                            editingProfile = profile
+                            editRequest = EditProfileRequest(profile: profile)
                         } label: {
                             HStack {
                                 Circle().fill(profile.color).frame(width: 12, height: 12)
@@ -118,7 +118,9 @@ struct YouView: View {
                                     if result == .denied {
                                         settings.remindersEnabled = false
                                     }
-                                    modelContext.commitSave()
+                                    if !modelContext.commitSave() {
+                                        modelContext.rollback()
+                                    }
                                 }
                             }
                         }
@@ -212,26 +214,24 @@ struct YouView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
             }
-            .sheet(isPresented: Binding(
-                get: { editingProfile != nil },
-                set: { if !$0 { editingProfile = nil } }
-            )) {
-                if let profile = editingProfile {
-                    EditProfileSheet(profile: profile)
-                        .onDisappear { modelContext.commitSave() }
-                }
-            }
-            .sheet(isPresented: $showExportSheet, onDismiss: { exportURL = nil }) {
-                if let exportURL {
-                    ShareLink(item: exportURL) {
-                        Label("Share export file", systemImage: "square.and.arrow.up")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding()
+            .sheet(item: $editRequest) { request in
+                EditProfileSheet(profile: request.profile)
+                    .onDisappear {
+                        if !modelContext.commitSave() {
+                            modelContext.rollback()
+                            saveError = "Profile changes couldn't be saved."
+                        }
                     }
-                    .padding()
-                    .presentationDetents([.medium])
+            }
+            .sheet(item: $exportItem) { item in
+                ShareLink(item: item.url) {
+                    Label("Share export file", systemImage: "square.and.arrow.up")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
                 }
+                .padding()
+                .presentationDetents([.medium])
             }
             .alert("Export failed", isPresented: Binding(
                 get: { exportError != nil },
@@ -240,6 +240,14 @@ struct YouView: View {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(exportError ?? "")
+            }
+            .alert("Couldn't save", isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(saveError ?? "Please try again.")
             }
         }
     }
@@ -270,34 +278,58 @@ struct YouView: View {
         }
         newProfileName = ""
         showAddProfile = false
-        modelContext.commitSave()
+        if !modelContext.commitSave() {
+            modelContext.rollback()
+            saveError = "Couldn't add that profile. Please try again."
+        }
     }
 
     private func deleteProfiles(at offsets: IndexSet) {
-        for index in offsets {
-            let profile = profiles[index]
-            let profileId = profile.id
+        let toDelete = offsets.map { profiles[$0] }
+        let deletingIds = Set(toDelete.map(\.id))
+        let survivors = profiles.filter { !deletingIds.contains($0.id) }
 
+        for profile in toDelete {
+            let profileId = profile.id
             entries.filter { $0.profileId == profileId }.forEach { modelContext.delete($0) }
             activeChallenges.filter { $0.profileId == profileId }.forEach { modelContext.delete($0) }
             stamps.filter { $0.profileId == profileId }.forEach { modelContext.delete($0) }
-
-            if settings.selectedProfileId == profileId {
-                settings.selectedProfileId = profiles.first(where: { $0.id != profileId })?.id
-            }
             modelContext.delete(profile)
         }
-        modelContext.commitSave()
+
+        if let selected = settings.selectedProfileId, deletingIds.contains(selected) {
+            settings.selectedProfileId = survivors.first?.id
+        }
+
+        if !modelContext.commitSave() {
+            modelContext.rollback()
+            saveError = "Couldn't delete that profile. Please try again."
+        }
     }
 
     private func exportData() {
         do {
-            exportURL = try DataExporter.writeExportFile(context: modelContext, settings: settings)
-            showExportSheet = true
+            let url = try DataExporter.writeExportFile(context: modelContext, settings: settings)
+            exportItem = ExportShareItem(url: url)
         } catch {
             exportError = error.localizedDescription
         }
     }
+}
+
+private struct EditProfileRequest: Identifiable {
+    let id: UUID
+    let profile: Profile
+
+    init(profile: Profile) {
+        self.id = profile.id
+        self.profile = profile
+    }
+}
+
+private struct ExportShareItem: Identifiable {
+    let id = UUID()
+    let url: URL
 }
 
 struct StampGridView: View {

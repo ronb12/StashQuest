@@ -21,14 +21,26 @@ struct LogSaveSheet: View {
     @State private var amountText = ""
     @State private var note = ""
     @State private var selectedChallengeId: String?
+    @State private var saveError: String?
+    @State private var isSaving = false
 
     private enum Field {
         case amount
         case note
     }
 
-    private var activeForProfile: [ActiveChallenge] {
-        activeChallenges.filter { $0.profileId == profile.id }
+    /// Personal actives plus any shared family challenges so every profile can log toward Trip Jar, etc.
+    private var selectableChallenges: [ActiveChallenge] {
+        var seen = Set<String>()
+        var result: [ActiveChallenge] = []
+        for active in activeChallenges {
+            let isPersonal = active.profileId == profile.id
+            let isFamily = ChallengeCatalog.challenge(id: active.challengeId)?.audience == .family
+            guard isPersonal || isFamily else { continue }
+            guard seen.insert(active.challengeId).inserted else { continue }
+            result.append(active)
+        }
+        return result
     }
 
     private var quickAmounts: [Double] {
@@ -96,11 +108,11 @@ struct LogSaveSheet: View {
                     }
                 }
 
-                if !activeForProfile.isEmpty {
+                if !selectableChallenges.isEmpty {
                     Section("Challenge (optional)") {
                         Picker("Challenge", selection: $selectedChallengeId) {
                             Text("None").tag(String?.none)
-                            ForEach(activeForProfile, id: \.id) { active in
+                            ForEach(selectableChallenges, id: \.id) { active in
                                 if let challenge = ChallengeCatalog.challenge(id: active.challengeId) {
                                     Text(challenge.name).tag(Optional(challenge.id))
                                 }
@@ -127,10 +139,11 @@ struct LogSaveSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .disabled(isSaving)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { save() }
-                        .disabled(parsedAmount == nil)
+                        .disabled(parsedAmount == nil || isSaving)
                         .accessibilityIdentifier("logSaveButton")
                 }
                 ToolbarItemGroup(placement: .keyboard) {
@@ -139,7 +152,6 @@ struct LogSaveSheet: View {
                 }
             }
             .onAppear {
-                // Optional raw values from older installs can be nil — never crash sheet setup.
                 kind = profile.lastLogKind
                 if selectedChallengeId == nil {
                     selectedChallengeId = initialChallengeId
@@ -147,6 +159,14 @@ struct LogSaveSheet: View {
                 if amountText.isEmpty {
                     applySuggestedAmount()
                 }
+            }
+            .alert("Couldn't save", isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(saveError ?? "Please try again.")
             }
         }
     }
@@ -175,7 +195,8 @@ struct LogSaveSheet: View {
     }
 
     private func save() {
-        guard let amount = parsedAmount else { return }
+        guard let amount = parsedAmount, !isSaving else { return }
+        isSaving = true
 
         let entry = SaveEntry(
             profileId: profile.id,
@@ -188,7 +209,13 @@ struct LogSaveSheet: View {
         profile.lastLogKind = kind
 
         checkChallengeCompletion(for: selectedChallengeId, profileId: profile.id)
-        modelContext.commitSave()
+
+        guard modelContext.commitSave() else {
+            modelContext.rollback()
+            isSaving = false
+            saveError = "Your log couldn't be saved. Please try again."
+            return
+        }
 
         let message: String
         switch kind {
@@ -215,23 +242,47 @@ struct LogSaveSheet: View {
 
     private func checkChallengeCompletion(for challengeId: String?, profileId: UUID) {
         guard let challengeId,
-              let challenge = ChallengeCatalog.challenge(id: challengeId),
-              let goal = activeChallenges.first(where: { $0.profileId == profileId && $0.challengeId == challengeId })?.targetAmount ?? challenge.goalAmount,
-              goal > 0 else { return }
+              let challenge = ChallengeCatalog.challenge(id: challengeId) else { return }
+
+        let relatedActives = activeChallenges.filter { $0.challengeId == challengeId }
+        let goal = relatedActives.first?.targetAmount ?? challenge.goalAmount
+        guard let goal, goal > 0 else { return }
 
         let descriptor = FetchDescriptor<SaveEntry>()
         guard let allEntries = try? modelContext.fetch(descriptor) else { return }
-        let progress = SavingsCalculator.challengeProgress(
-            entries: allEntries,
-            profileId: profileId,
-            challengeId: challengeId,
-            goal: goal
-        )
 
-        if progress >= 1.0 {
-            if let active = activeChallenges.first(where: { $0.profileId == profileId && $0.challengeId == challengeId }) {
-                active.status = .completed
+        let progress: Double
+        if challenge.isFamilyGoal {
+            progress = SavingsCalculator.familyChallengeProgress(
+                entries: allEntries,
+                challengeId: challengeId,
+                goal: goal
+            )
+        } else {
+            progress = SavingsCalculator.challengeProgress(
+                entries: allEntries,
+                profileId: profileId,
+                challengeId: challengeId,
+                goal: goal
+            )
+        }
+
+        guard progress >= 1.0 else { return }
+
+        for active in relatedActives {
+            active.status = .completed
+        }
+
+        if challenge.isFamilyGoal || challenge.audience == .family {
+            for member in profiles {
+                StampHelper.awardStampIfNeeded(
+                    context: modelContext,
+                    profileId: member.id,
+                    challengeId: challengeId,
+                    existingStamps: stamps
+                )
             }
+        } else {
             StampHelper.awardStampIfNeeded(
                 context: modelContext,
                 profileId: profileId,
