@@ -43,6 +43,10 @@ struct Challenge: Identifiable, Hashable {
         case .ongoing: return nil
         }
     }
+
+    var isFamilyGoal: Bool {
+        audience == .family && goalAmount != nil
+    }
 }
 
 enum ChallengeCatalog {
@@ -115,9 +119,9 @@ enum ChallengeCatalog {
     static let family: [Challenge] = [
         Challenge(id: "family-parent-match", name: "Parent Match", rule: "When a kid stashes money, a grown-up adds the same amount to the kid's vault.", audience: .family, category: .stash, duration: .ongoing, defaultAmount: 5, defaultAmountLabel: "$5", supportsParentMatch: true, goalAmount: nil),
         Challenge(id: "family-no-spend-night", name: "Family No-Spend Night", rule: "One evening of free fun only. Log the outing you skipped.", audience: .family, category: .skip, duration: .oneDay, defaultAmount: 40, defaultAmountLabel: "$40", supportsParentMatch: false, goalAmount: nil),
-        Challenge(id: "family-trip-jar", name: "Trip Jar", rule: "Shared vacation or day-trip goal. Anyone can log into the family pot.", audience: .family, category: .goal, duration: .ongoing, defaultAmount: 20, defaultAmountLabel: "$20", supportsParentMatch: false, goalAmount: 500),
+        Challenge(id: "family-trip-jar", name: "Trip Jar", rule: "Everyone logs toward one shared goal. Each vault keeps its own balance — Home shows combined family progress.", audience: .family, category: .goal, duration: .ongoing, defaultAmount: 20, defaultAmountLabel: "$20", supportsParentMatch: false, goalAmount: 500),
         Challenge(id: "family-holiday", name: "Holiday Together", rule: "Weekly family stash until December.", audience: .family, category: .goal, duration: .ongoing, defaultAmount: 15, defaultAmountLabel: "$15", supportsParentMatch: false, goalAmount: 300),
         Challenge(id: "family-game-night", name: "Game Night In", rule: "Skip paid entertainment. Log the outing cost.", audience: .family, category: .skip, duration: .oneDay, defaultAmount: 35, defaultAmountLabel: "$35", supportsParentMatch: false, goalAmount: nil),
-        Challenge(id: "family-give-little", name: "Give a Little", rule: "Pick a cause. Each person stashes a small give amount, then donates it.", audience: .family, category: .stash, duration: .oneDay, defaultAmount: 5, defaultAmountLabel: "$5", supportsParentMatch: false, goalAmount: nil),
+        Challenge(id: "family-give-little", name: "Give a Little", rule: "Pick a cause together. Log Give when ready — mark donated once you've actually given.", audience: .family, category: .stash, duration: .oneDay, defaultAmount: 5, defaultAmountLabel: "$5", supportsParentMatch: false, goalAmount: nil),
     ]
 }

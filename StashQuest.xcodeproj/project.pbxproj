@@ -8,46 +8,94 @@
 
 /* Begin PBXBuildFile section */
 		1D5336D743D0CB0F2DA8215D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4C75AED4D1BC3E638AA3FC /* AppSettings.swift */; };
+		1FDABC591CB7319D78ED39CF /* LegalDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67B9950E2CAA14726DAE154C /* LegalDocuments.swift */; };
 		267E51E50E358F8428D2F7E2 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF784D125AB6F12E763BB31 /* HomeView.swift */; };
 		267F5CBE30D462A10B1F447A /* VaultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98520DF29608D033D45F39B3 /* VaultView.swift */; };
 		27E4C9E4E861341FF96A6F6D /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723048EF714279D86705B956 /* ActivityView.swift */; };
 		314A2996166344A631ACFEA7 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F11BFF238E1CB90CB05AB0 /* MainTabView.swift */; };
+		3909C301EFE7F66BAB073E3F /* ModelContext+Save.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B1A5B22C39508AB6EBE6D8 /* ModelContext+Save.swift */; };
 		43D6EFD098A2366F29AAF505 /* ChallengeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5650A5DA8B3AC4BBB59203E /* ChallengeDetailView.swift */; };
+		4B5E7E5F140A4F11C339D99B /* EditProfileSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D21C3483B14831107C121BB /* EditProfileSheet.swift */; };
+		5028AC2CF84B25112739278A /* ParentMatchRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EF50A686EB6DA5372F2AAE /* ParentMatchRules.swift */; };
 		60B6524F497B8F84F86987EC /* StashQuestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29272DF5B405AB961F657DAA /* StashQuestApp.swift */; };
+		6475C0E1D3AD6F2A07B98528 /* StashQuestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A95A45ABB9C28A90556B3D /* StashQuestUITests.swift */; };
+		663A863FA1CC27215436EF06 /* ChallengePaperChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD80F20A437F709D15A0868 /* ChallengePaperChecklistView.swift */; };
 		6D1A4982D9A47DE166AE0408 /* YouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C907DFC9BAC8FE5D85E84C1 /* YouView.swift */; };
+		7D7C4C753DB8759D08E4E0E9 /* AppStoreURLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = B38E24692C2112AF5A2B85DF /* AppStoreURLs.swift */; };
 		7E044E84D4B13A3251DA9901 /* SaveEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F5152962CE77935A9DEECD /* SaveEntry.swift */; };
 		81556941C27E37A496509900 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD358ACBF41190793C5E1E /* Profile.swift */; };
 		94E7982D99E889F0AC5E810E /* ChallengesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F877D816FFBFAE864AA6CA /* ChallengesView.swift */; };
+		98C3682F084672B1D5FF7D71 /* CurrencyParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AEC405371D330DB314C99FF /* CurrencyParser.swift */; };
 		A5A42F3F0163B503E6165557 /* ChallengeCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6628A142BB5A029ED96098C /* ChallengeCatalog.swift */; };
 		A6F188ED0E74B49E833C0883 /* ActiveChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D31A60A3EAA67D1F27209551 /* ActiveChallenge.swift */; };
 		ACD8F6145D564C46773E48E9 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491D081026C8564F200AF607 /* NotificationManager.swift */; };
+		B7E573EA540332774D89FDB6 /* LegalDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C71D48275391A05405C0C /* LegalDocumentView.swift */; };
 		BE04E704CB54AF7106D5476C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F9EDCDCF6AF8FFC97FE8A5A7 /* Assets.xcassets */; };
+		C0706F3BFD2E8438FB2E7791 /* DataExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11EB36F6CC3EFAB1E8B56E6 /* DataExporter.swift */; };
+		C899717D0D05611585549189 /* FamilyGoalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65EC3F64E74491B64831896 /* FamilyGoalCard.swift */; };
+		CB24BA7942D8979E9FC08DD8 /* WidgetDataSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056AD72758C56CA4E40675BB /* WidgetDataSync.swift */; };
+		D14E1E98A443A13789C790C3 /* DataStoreBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB8DA728FCFA5A6216093A7 /* DataStoreBootstrap.swift */; };
+		D89AD1F331BAB40D45AB636D /* AppAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17952097B2C83080B028F9E4 /* AppAnimations.swift */; };
+		D8E11D4101A641BF31A16AA0 /* StashQuestWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D31C59C6531E2EF313488E7 /* StashQuestWidget.swift */; };
 		E0B86F0E83A3CB3F087C3FDF /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6A230782529ECFEA270EC6 /* RootView.swift */; };
 		E28067A3B0325618780CB744 /* LogSaveSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A471539928E4BE0C38559033 /* LogSaveSheet.swift */; };
+		EC872B6C619A769DE3656421 /* StashQuestWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75872D3A60752AA86507A180 /* StashQuestWidgetBundle.swift */; };
 		F7ABE203ABD40A7439A4781D /* SavingsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C157EFF69B2ECD52CC74E465 /* SavingsCalculator.swift */; };
+		FA3B60793555A39BBB9B2576 /* ChallengeChecklist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CAC625CD8BD15CC6D57375C /* ChallengeChecklist.swift */; };
 		FCF9727DB2844AD6901DD5EB /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB3CC92B7647ABB06B95181 /* OnboardingView.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		E83F306964C056637EAA54BE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29D2A5DAFB42E1FC2F133710 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 080E46DF2373CE4D11613906;
+			remoteInfo = StashQuest;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		056AD72758C56CA4E40675BB /* WidgetDataSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataSync.swift; sourceTree = "<group>"; };
+		070C71D48275391A05405C0C /* LegalDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDocumentView.swift; sourceTree = "<group>"; };
+		0AF1C5B63040A83788679C90 /* StashQuestWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = StashQuestWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		17952097B2C83080B028F9E4 /* AppAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAnimations.swift; sourceTree = "<group>"; };
+		1D21C3483B14831107C121BB /* EditProfileSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileSheet.swift; sourceTree = "<group>"; };
 		29272DF5B405AB961F657DAA /* StashQuestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashQuestApp.swift; sourceTree = "<group>"; };
+		34EF50A686EB6DA5372F2AAE /* ParentMatchRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentMatchRules.swift; sourceTree = "<group>"; };
 		42BD358ACBF41190793C5E1E /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		491D081026C8564F200AF607 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		4BAE19F2472E3E3C29069ACE /* StashQuest.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = StashQuest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		617C04B4500EE63F76DB773E /* StashQuestUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = StashQuestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		67B9950E2CAA14726DAE154C /* LegalDocuments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDocuments.swift; sourceTree = "<group>"; };
 		6F6A230782529ECFEA270EC6 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		70B1A5B22C39508AB6EBE6D8 /* ModelContext+Save.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ModelContext+Save.swift"; sourceTree = "<group>"; };
 		723048EF714279D86705B956 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
+		75872D3A60752AA86507A180 /* StashQuestWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashQuestWidgetBundle.swift; sourceTree = "<group>"; };
+		7AEC405371D330DB314C99FF /* CurrencyParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyParser.swift; sourceTree = "<group>"; };
+		7BD80F20A437F709D15A0868 /* ChallengePaperChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengePaperChecklistView.swift; sourceTree = "<group>"; };
+		7D31C59C6531E2EF313488E7 /* StashQuestWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashQuestWidget.swift; sourceTree = "<group>"; };
 		81F11BFF238E1CB90CB05AB0 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		82F5152962CE77935A9DEECD /* SaveEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveEntry.swift; sourceTree = "<group>"; };
+		8CAC625CD8BD15CC6D57375C /* ChallengeChecklist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeChecklist.swift; sourceTree = "<group>"; };
 		92F877D816FFBFAE864AA6CA /* ChallengesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesView.swift; sourceTree = "<group>"; };
 		98520DF29608D033D45F39B3 /* VaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultView.swift; sourceTree = "<group>"; };
 		9C907DFC9BAC8FE5D85E84C1 /* YouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouView.swift; sourceTree = "<group>"; };
 		A471539928E4BE0C38559033 /* LogSaveSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSaveSheet.swift; sourceTree = "<group>"; };
+		AA4172E4575A56B5FD373FCC /* StashQuestWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StashQuestWidget.entitlements; sourceTree = "<group>"; };
 		AE4C75AED4D1BC3E638AA3FC /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		B38E24692C2112AF5A2B85DF /* AppStoreURLs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreURLs.swift; sourceTree = "<group>"; };
 		B5650A5DA8B3AC4BBB59203E /* ChallengeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeDetailView.swift; sourceTree = "<group>"; };
 		C157EFF69B2ECD52CC74E465 /* SavingsCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavingsCalculator.swift; sourceTree = "<group>"; };
 		C8567A00F04EA6ED17D2A20D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CCB3CC92B7647ABB06B95181 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		CFF784D125AB6F12E763BB31 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		D31A60A3EAA67D1F27209551 /* ActiveChallenge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveChallenge.swift; sourceTree = "<group>"; };
+		D7A95A45ABB9C28A90556B3D /* StashQuestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashQuestUITests.swift; sourceTree = "<group>"; };
+		E67CB85386BDEAB7C0ADF4EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		EFB8DA728FCFA5A6216093A7 /* DataStoreBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStoreBootstrap.swift; sourceTree = "<group>"; };
+		F11EB36F6CC3EFAB1E8B56E6 /* DataExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExporter.swift; sourceTree = "<group>"; };
+		F65EC3F64E74491B64831896 /* FamilyGoalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyGoalCard.swift; sourceTree = "<group>"; };
 		F6628A142BB5A029ED96098C /* ChallengeCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeCatalog.swift; sourceTree = "<group>"; };
 		F9EDCDCF6AF8FFC97FE8A5A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -57,13 +105,28 @@
 			isa = PBXGroup;
 			children = (
 				4BAE19F2472E3E3C29069ACE /* StashQuest.app */,
+				617C04B4500EE63F76DB773E /* StashQuestUITests.xctest */,
+				0AF1C5B63040A83788679C90 /* StashQuestWidget.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		49090E93509676CA4734D4BC /* StashQuestWidget */ = {
+			isa = PBXGroup;
+			children = (
+				E67CB85386BDEAB7C0ADF4EA /* Info.plist */,
+				AA4172E4575A56B5FD373FCC /* StashQuestWidget.entitlements */,
+				7D31C59C6531E2EF313488E7 /* StashQuestWidget.swift */,
+				75872D3A60752AA86507A180 /* StashQuestWidgetBundle.swift */,
+			);
+			path = StashQuestWidget;
 			sourceTree = "<group>";
 		};
 		5693837BA1004C7D749366D0 /* You */ = {
 			isa = PBXGroup;
 			children = (
+				1D21C3483B14831107C121BB /* EditProfileSheet.swift */,
+				070C71D48275391A05405C0C /* LegalDocumentView.swift */,
 				9C907DFC9BAC8FE5D85E84C1 /* YouView.swift */,
 			);
 			path = You;
@@ -73,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				B5650A5DA8B3AC4BBB59203E /* ChallengeDetailView.swift */,
+				7BD80F20A437F709D15A0868 /* ChallengePaperChecklistView.swift */,
 				92F877D816FFBFAE864AA6CA /* ChallengesView.swift */,
 			);
 			path = Challenges;
@@ -122,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				F6628A142BB5A029ED96098C /* ChallengeCatalog.swift */,
+				8CAC625CD8BD15CC6D57375C /* ChallengeChecklist.swift */,
 			);
 			path = Catalog;
 			sourceTree = "<group>";
@@ -134,10 +199,20 @@
 			path = Home;
 			sourceTree = "<group>";
 		};
+		A73EBDC4882F11757BE54AA6 /* StashQuestUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D7A95A45ABB9C28A90556B3D /* StashQuestUITests.swift */,
+			);
+			path = StashQuestUITests;
+			sourceTree = "<group>";
+		};
 		B08D8B4A520B56BB92CBDED6 = {
 			isa = PBXGroup;
 			children = (
 				D2FC289E3373759B6662E4BB /* StashQuest */,
+				A73EBDC4882F11757BE54AA6 /* StashQuestUITests */,
+				49090E93509676CA4734D4BC /* StashQuestWidget */,
 				1960C480FEDCD9FB438AC0C0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -160,6 +235,7 @@
 				C8567A00F04EA6ED17D2A20D /* Info.plist */,
 				29272DF5B405AB961F657DAA /* StashQuestApp.swift */,
 				80A3A890779136131BC0C260 /* Catalog */,
+				F2BDC4BD4A645AF8C773326E /* Legal */,
 				BC34C2B8AE9D9FAD1B0475FA /* Models */,
 				F06D30338231DDECF0CAF2CE /* Services */,
 				759F77D682A40EFE012C45F7 /* Views */,
@@ -170,6 +246,8 @@
 		D306A6D76298C09C0A33A4DF /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				17952097B2C83080B028F9E4 /* AppAnimations.swift */,
+				F65EC3F64E74491B64831896 /* FamilyGoalCard.swift */,
 				98520DF29608D033D45F39B3 /* VaultView.swift */,
 			);
 			path = Components;
@@ -178,10 +256,25 @@
 		F06D30338231DDECF0CAF2CE /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				7AEC405371D330DB314C99FF /* CurrencyParser.swift */,
+				F11EB36F6CC3EFAB1E8B56E6 /* DataExporter.swift */,
+				EFB8DA728FCFA5A6216093A7 /* DataStoreBootstrap.swift */,
+				70B1A5B22C39508AB6EBE6D8 /* ModelContext+Save.swift */,
 				491D081026C8564F200AF607 /* NotificationManager.swift */,
+				34EF50A686EB6DA5372F2AAE /* ParentMatchRules.swift */,
 				C157EFF69B2ECD52CC74E465 /* SavingsCalculator.swift */,
+				056AD72758C56CA4E40675BB /* WidgetDataSync.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		F2BDC4BD4A645AF8C773326E /* Legal */ = {
+			isa = PBXGroup;
+			children = (
+				B38E24692C2112AF5A2B85DF /* AppStoreURLs.swift */,
+				67B9950E2CAA14726DAE154C /* LegalDocuments.swift */,
+			);
+			path = Legal;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -205,6 +298,41 @@
 			productReference = 4BAE19F2472E3E3C29069ACE /* StashQuest.app */;
 			productType = "com.apple.product-type.application";
 		};
+		8FBF8F17468597D4717EEC81 /* StashQuestWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 50EF11992F0EAC46086F958B /* Build configuration list for PBXNativeTarget "StashQuestWidget" */;
+			buildPhases = (
+				F8CBC36227DAE7583B9B2956 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StashQuestWidget;
+			packageProductDependencies = (
+			);
+			productName = StashQuestWidget;
+			productReference = 0AF1C5B63040A83788679C90 /* StashQuestWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		DE9F54221C8FEFC4BF514C62 /* StashQuestUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 80394F5991B523C5F2851B5A /* Build configuration list for PBXNativeTarget "StashQuestUITests" */;
+			buildPhases = (
+				CA5DCD8FEEF2924737D8C4CA /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1C07D8E2EDC3AB8DD20B02FE /* PBXTargetDependency */,
+			);
+			name = StashQuestUITests;
+			packageProductDependencies = (
+			);
+			productName = StashQuestUITests;
+			productReference = 617C04B4500EE63F76DB773E /* StashQuestUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -215,7 +343,17 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					080E46DF2373CE4D11613906 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = 4SQJ3AH62S;
+						ProvisioningStyle = Automatic;
+					};
+					8FBF8F17468597D4717EEC81 = {
+						DevelopmentTeam = 4SQJ3AH62S;
+						ProvisioningStyle = Automatic;
+					};
+					DE9F54221C8FEFC4BF514C62 = {
+						DevelopmentTeam = 4SQJ3AH62S;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 080E46DF2373CE4D11613906;
 					};
 				};
 			};
@@ -234,6 +372,8 @@
 			projectRoot = "";
 			targets = (
 				080E46DF2373CE4D11613906 /* StashQuest */,
+				DE9F54221C8FEFC4BF514C62 /* StashQuestUITests */,
+				8FBF8F17468597D4717EEC81 /* StashQuestWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -256,26 +396,65 @@
 			files = (
 				A6F188ED0E74B49E833C0883 /* ActiveChallenge.swift in Sources */,
 				27E4C9E4E861341FF96A6F6D /* ActivityView.swift in Sources */,
+				D89AD1F331BAB40D45AB636D /* AppAnimations.swift in Sources */,
 				1D5336D743D0CB0F2DA8215D /* AppSettings.swift in Sources */,
+				7D7C4C753DB8759D08E4E0E9 /* AppStoreURLs.swift in Sources */,
 				A5A42F3F0163B503E6165557 /* ChallengeCatalog.swift in Sources */,
+				FA3B60793555A39BBB9B2576 /* ChallengeChecklist.swift in Sources */,
 				43D6EFD098A2366F29AAF505 /* ChallengeDetailView.swift in Sources */,
+				663A863FA1CC27215436EF06 /* ChallengePaperChecklistView.swift in Sources */,
 				94E7982D99E889F0AC5E810E /* ChallengesView.swift in Sources */,
+				98C3682F084672B1D5FF7D71 /* CurrencyParser.swift in Sources */,
+				C0706F3BFD2E8438FB2E7791 /* DataExporter.swift in Sources */,
+				D14E1E98A443A13789C790C3 /* DataStoreBootstrap.swift in Sources */,
+				4B5E7E5F140A4F11C339D99B /* EditProfileSheet.swift in Sources */,
+				C899717D0D05611585549189 /* FamilyGoalCard.swift in Sources */,
 				267E51E50E358F8428D2F7E2 /* HomeView.swift in Sources */,
+				B7E573EA540332774D89FDB6 /* LegalDocumentView.swift in Sources */,
+				1FDABC591CB7319D78ED39CF /* LegalDocuments.swift in Sources */,
 				E28067A3B0325618780CB744 /* LogSaveSheet.swift in Sources */,
 				314A2996166344A631ACFEA7 /* MainTabView.swift in Sources */,
+				3909C301EFE7F66BAB073E3F /* ModelContext+Save.swift in Sources */,
 				ACD8F6145D564C46773E48E9 /* NotificationManager.swift in Sources */,
 				FCF9727DB2844AD6901DD5EB /* OnboardingView.swift in Sources */,
+				5028AC2CF84B25112739278A /* ParentMatchRules.swift in Sources */,
 				81556941C27E37A496509900 /* Profile.swift in Sources */,
 				E0B86F0E83A3CB3F087C3FDF /* RootView.swift in Sources */,
 				7E044E84D4B13A3251DA9901 /* SaveEntry.swift in Sources */,
 				F7ABE203ABD40A7439A4781D /* SavingsCalculator.swift in Sources */,
 				60B6524F497B8F84F86987EC /* StashQuestApp.swift in Sources */,
 				267F5CBE30D462A10B1F447A /* VaultView.swift in Sources */,
+				CB24BA7942D8979E9FC08DD8 /* WidgetDataSync.swift in Sources */,
 				6D1A4982D9A47DE166AE0408 /* YouView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CA5DCD8FEEF2924737D8C4CA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6475C0E1D3AD6F2A07B98528 /* StashQuestUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F8CBC36227DAE7583B9B2956 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D8E11D4101A641BF31A16AA0 /* StashQuestWidget.swift in Sources */,
+				EC872B6C619A769DE3656421 /* StashQuestWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1C07D8E2EDC3AB8DD20B02FE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 080E46DF2373CE4D11613906 /* StashQuest */;
+			targetProxy = E83F306964C056637EAA54BE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0553CC3A9544772999B37DA6 /* Release */ = {
@@ -311,9 +490,10 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 4SQJ3AH62S;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -340,7 +520,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4SQJ3AH62S;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = StashQuest/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Stash Quest";
@@ -359,12 +541,54 @@
 			};
 			name = Release;
 		};
+		2C21FB7E14F2B0B00360257F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradley.stashquest.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = StashQuest;
+			};
+			name = Release;
+		};
+		42E1B929DBFA08978DA97DBC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StashQuestWidget/StashQuestWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4SQJ3AH62S;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StashQuestWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Stash Quest Widget";
+				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = "com.apple.widgetkit-extension";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradley.stashquest.widget;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		61EF1F20C8261AFBF5E4A147 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4SQJ3AH62S;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = StashQuest/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Stash Quest";
@@ -378,6 +602,29 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bradley.stashquest;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		70E134EF6F2DE1C8587C496D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StashQuestWidget/StashQuestWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4SQJ3AH62S;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StashQuestWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Stash Quest Widget";
+				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = "com.apple.widgetkit-extension";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradley.stashquest.widget;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -416,9 +663,10 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 4SQJ3AH62S;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -447,6 +695,23 @@
 			};
 			name = Debug;
 		};
+		F1F82AFDF1FB5ADCFA5A4DC1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bradley.stashquest.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = StashQuest;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -455,6 +720,24 @@
 			buildConfigurations = (
 				61EF1F20C8261AFBF5E4A147 /* Debug */,
 				1716D35C815AA5D2C375385E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		50EF11992F0EAC46086F958B /* Build configuration list for PBXNativeTarget "StashQuestWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70E134EF6F2DE1C8587C496D /* Debug */,
+				42E1B929DBFA08978DA97DBC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		80394F5991B523C5F2851B5A /* Build configuration list for PBXNativeTarget "StashQuestUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F1F82AFDF1FB5ADCFA5A4DC1 /* Debug */,
+				2C21FB7E14F2B0B00360257F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

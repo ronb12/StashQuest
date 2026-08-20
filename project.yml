@@ -7,7 +7,15 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.9"
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: 4SQJ3AH62S
+    CODE_SIGN_STYLE: Automatic
+  configs:
+    Debug:
+      DEVELOPMENT_TEAM: 4SQJ3AH62S
+      CODE_SIGN_STYLE: Automatic
+    Release:
+      DEVELOPMENT_TEAM: 4SQJ3AH62S
+      CODE_SIGN_STYLE: Automatic
 targets:
   StashQuest:
     type: application
@@ -17,6 +25,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.bradley.stashquest
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 4SQJ3AH62S
         INFOPLIST_KEY_CFBundleDisplayName: Stash Quest
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.finance
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
@@ -30,3 +40,32 @@ targets:
       path: StashQuest/Info.plist
       properties:
         NSUserNotificationsUsageDescription: Stash Quest can remind you about allowance, Coin Friday, and savings days.
+  # Widget target kept for future device builds; not embedded for simulator testing when appex placeholder fails.
+  StashQuestWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - StashQuestWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.bradley.stashquest.widget
+        CODE_SIGN_ENTITLEMENTS: StashQuestWidget/StashQuestWidget.entitlements
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 4SQJ3AH62S
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Stash Quest Widget
+        INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier: com.apple.widgetkit-extension
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 1.0
+  StashQuestUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - StashQuestUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.bradley.stashquest.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: StashQuest
+    dependencies:
+      - target: StashQuest

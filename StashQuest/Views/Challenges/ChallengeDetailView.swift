@@ -3,6 +3,7 @@ import SwiftData
 
 struct ChallengeDetailView: View {
     @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Profile.createdAt) private var profiles: [Profile]
     @Query(sort: \SaveEntry.date, order: .reverse) private var entries: [SaveEntry]
     @Query(filter: #Predicate<ActiveChallenge> { $0.statusRaw == "active" })
     private var activeChallenges: [ActiveChallenge]
@@ -24,7 +25,25 @@ struct ChallengeDetailView: View {
     }
 
     private var challengeEntries: [SaveEntry] {
-        entries.filter { $0.profileId == profile.id && $0.challengeId == challenge.id }
+        if challenge.isFamilyGoal {
+            return entries.filter { $0.challengeId == challenge.id }
+        }
+        return entries.filter { $0.profileId == profile.id && $0.challengeId == challenge.id }
+    }
+
+    private var completionHint: String {
+        let hasPaper = challenge.checklistSlotCount > 0
+        let hasGoal = (active?.targetAmount ?? challenge.goalAmount ?? 0) > 0
+        switch (hasPaper, hasGoal) {
+        case (true, true):
+            return "Complete by checking every box on the paper list or reaching the dollar goal."
+        case (true, false):
+            return "Complete by checking every box on the paper list."
+        case (false, true):
+            return "Complete by reaching the dollar goal."
+        default:
+            return "Log entries linked to this challenge to track progress."
+        }
     }
 
     var body: some View {
@@ -32,6 +51,19 @@ struct ChallengeDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 header
                 ruleSection
+                completionHintSection
+                if let active, !isCompleted {
+                    ChallengePaperChecklistView(
+                        challenge: challenge,
+                        active: active,
+                        accent: profile.color,
+                        onAllChecked: {
+                            if !isCompleted {
+                                completeChallenge()
+                            }
+                        }
+                    )
+                }
                 if active != nil || isCompleted {
                     progressSection
                     entriesSection
@@ -45,11 +77,14 @@ struct ChallengeDetailView: View {
         .sheet(isPresented: $showLogSheet) {
             LogSaveSheet(
                 profile: profile,
-                profiles: [],
+                profiles: profiles,
                 settings: settings,
                 initialChallengeId: challenge.id,
                 onSaved: { _, _ in }
             )
+        }
+        .onAppear {
+            settings.selectedProfileId = profile.id
         }
     }
 
@@ -70,6 +105,9 @@ struct ChallengeDetailView: View {
                         .foregroundStyle(.orange)
                 }
             }
+            Text(challenge.isFamilyGoal ? "Family challenge" : "For \(profile.name)")
+                .font(.subheadline)
+                .foregroundStyle(profile.color)
             Text(challenge.category.rawValue)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -88,25 +126,52 @@ struct ChallengeDetailView: View {
         .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
     }
 
+    private var completionHintSection: some View {
+        Text(completionHint)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 4)
+    }
+
     private var progressSection: some View {
         let goal = active?.targetAmount ?? challenge.goalAmount
-        let progress = SavingsCalculator.challengeProgress(
-            entries: entries,
-            profileId: profile.id,
-            challengeId: challenge.id,
-            goal: goal
-        )
+        let isFamilyGoal = challenge.isFamilyGoal
+        let logged = isFamilyGoal
+            ? SavingsCalculator.familyChallengeTotal(entries: entries, challengeId: challenge.id)
+            : challengeEntries.reduce(0) { $0 + $1.signedAmount }
+        let progress = isFamilyGoal
+            ? SavingsCalculator.familyChallengeProgress(entries: entries, challengeId: challenge.id, goal: goal)
+            : SavingsCalculator.challengeProgress(
+                entries: entries,
+                profileId: profile.id,
+                challengeId: challenge.id,
+                goal: goal
+            )
+
         return VStack(alignment: .leading, spacing: 8) {
-            Text("Progress")
+            Text(isFamilyGoal ? "Family progress" : "Progress")
                 .font(.headline)
-            if let goal {
+            if let active, active.status == .active {
+                let paperProgress = ChallengeChecklistHelper.progress(active: active, challenge: challenge)
+                HStack(spacing: 6) {
+                    Image(systemName: challenge.checklistMarkedIcon)
+                        .foregroundStyle(profile.color)
+                    Text("Paper: \(active.checkedSlots.count)/\(challenge.checklistSlotCount) checked")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                ProgressView(value: paperProgress)
+                    .tint(profile.color)
+            }
+            if let goal, goal > 0 {
                 ProgressView(value: progress)
                     .tint(profile.color)
-                Text("\(SavingsCalculator.formatCurrency(progress * goal)) of \(SavingsCalculator.formatCurrency(goal))")
+                    .animation(AppAnimations.smooth, value: progress)
+                Text("\(SavingsCalculator.formatCurrency(logged)) of \(SavingsCalculator.formatCurrency(goal))\(isFamilyGoal ? " combined" : "")")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-            } else {
-                Text("Logged: \(SavingsCalculator.formatCurrency(challengeEntries.reduce(0) { $0 + $1.signedAmount }))")
+            } else if active == nil || active?.status != .active {
+                Text("Logged: \(SavingsCalculator.formatCurrency(logged))")
                     .font(.subheadline)
             }
         }
@@ -114,7 +179,7 @@ struct ChallengeDetailView: View {
 
     private var entriesSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Logs for this challenge")
+            Text(challenge.isFamilyGoal ? "Family logs" : "Logs for this challenge")
                 .font(.headline)
             if challengeEntries.isEmpty {
                 Text("No logs yet.")
@@ -123,15 +188,23 @@ struct ChallengeDetailView: View {
                 ForEach(challengeEntries, id: \.id) { entry in
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(entry.kind.label)
-                                .font(.subheadline.bold())
+                            HStack(spacing: 6) {
+                                Text(entry.kind.label)
+                                    .font(.subheadline.bold())
+                                if challenge.isFamilyGoal,
+                                   let owner = profiles.first(where: { $0.id == entry.profileId }) {
+                                    Text(owner.name)
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
                             if !entry.note.isEmpty {
                                 Text(entry.note).font(.caption).foregroundStyle(.secondary)
                             }
                         }
                         Spacer()
                         Text(SavingsCalculator.formatCurrency(entry.signedAmount))
-                            .foregroundStyle(entry.kind == .gave ? .red : .teal)
+                            .foregroundStyle(entry.kind.challengeLedgerColor)
                     }
                     .padding(.vertical, 4)
                 }
@@ -153,34 +226,58 @@ struct ChallengeDetailView: View {
             .buttonStyle(.borderedProminent)
             .tint(.teal)
             .frame(maxWidth: .infinity)
-        } else if active != nil {
-            Button("Log a save") { showLogSheet = true }
+            .accessibilityIdentifier("startChallengeButton")
+        } else if let active, active.status == .active {
+            Button("Log money") { showLogSheet = true }
                 .buttonStyle(.borderedProminent)
                 .tint(.teal)
                 .frame(maxWidth: .infinity)
+                .accessibilityIdentifier("challengeLogMoneyButton")
 
             Button("Mark complete") {
                 completeChallenge()
             }
             .buttonStyle(.bordered)
             .frame(maxWidth: .infinity)
+            .accessibilityIdentifier("markChallengeCompleteButton")
+
+            Button("End challenge", role: .destructive) {
+                endChallenge()
+            }
+            .buttonStyle(.bordered)
+            .frame(maxWidth: .infinity)
+            .accessibilityIdentifier("endChallengeButton")
         }
     }
 
     private func startChallenge() {
+        guard active == nil, !isCompleted else { return }
+
         let goal: Double?
-        if let custom = Double(customGoalText.replacingOccurrences(of: ",", with: ".")), custom > 0 {
+        if let custom = CurrencyParser.parse(customGoalText) {
             goal = custom
         } else {
             goal = challenge.goalAmount
         }
         let activeChallenge = ActiveChallenge(profileId: profile.id, challengeId: challenge.id, targetAmount: goal)
         modelContext.insert(activeChallenge)
+        settings.selectedProfileId = profile.id
+        modelContext.commitSave()
     }
 
     private func completeChallenge() {
         active?.status = .completed
-        let stamp = CompletedStamp(profileId: profile.id, challengeId: challenge.id)
-        modelContext.insert(stamp)
+        StampHelper.awardStampIfNeeded(
+            context: modelContext,
+            profileId: profile.id,
+            challengeId: challenge.id,
+            existingStamps: stamps
+        )
+        modelContext.commitSave()
+    }
+
+    private func endChallenge() {
+        active?.status = .paused
+        modelContext.commitSave()
     }
 }

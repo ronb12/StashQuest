@@ -22,6 +22,7 @@ final class Profile {
     var kindRaw: String
     var colorHex: String
     var createdAt: Date
+    var lastLogKindRaw: String?
 
     init(name: String, kind: ProfileKind, colorHex: String) {
         self.id = UUID()
@@ -29,11 +30,17 @@ final class Profile {
         self.kindRaw = kind.rawValue
         self.colorHex = colorHex
         self.createdAt = Date()
+        self.lastLogKindRaw = SaveKind.stashed.rawValue
     }
 
     var kind: ProfileKind {
         get { ProfileKind(rawValue: kindRaw) ?? .adult }
         set { kindRaw = newValue.rawValue }
+    }
+
+    var lastLogKind: SaveKind {
+        get { SaveKind(rawValue: lastLogKindRaw ?? "") ?? .stashed }
+        set { lastLogKindRaw = newValue.rawValue }
     }
 
     var color: Color {

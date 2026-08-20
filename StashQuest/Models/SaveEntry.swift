@@ -4,13 +4,15 @@ import SwiftData
 enum SaveKind: String, Codable, CaseIterable {
     case skipped
     case stashed
+    case spent
     case gave
 
     var label: String {
         switch self {
-        case .skipped: return "Skipped"
-        case .stashed: return "Stashed"
-        case .gave: return "Gave"
+        case .skipped: return "Skip"
+        case .stashed: return "Stash"
+        case .spent: return "Spent"
+        case .gave: return "Give"
         }
     }
 
@@ -18,7 +20,21 @@ enum SaveKind: String, Codable, CaseIterable {
         switch self {
         case .skipped: return "kept"
         case .stashed: return "stashed"
+        case .spent: return "spent"
         case .gave: return "gave"
+        }
+    }
+
+    var reducesVault: Bool {
+        self == .spent || self == .gave
+    }
+
+    var notePlaceholder: String {
+        switch self {
+        case .skipped: return "What did you skip?"
+        case .stashed: return "What did you stash?"
+        case .spent: return "What did you buy from savings?"
+        case .gave: return "Who or what did you give to?"
         }
     }
 }
@@ -33,7 +49,7 @@ final class SaveEntry {
     var note: String
     var challengeId: String?
     var matchedFromEntryId: UUID?
-    var isParentMatch: Bool
+    var isParentMatch: Bool?
 
     init(
         profileId: UUID,
@@ -43,7 +59,7 @@ final class SaveEntry {
         note: String = "",
         challengeId: String? = nil,
         matchedFromEntryId: UUID? = nil,
-        isParentMatch: Bool = false
+        isParentMatch: Bool? = false
     ) {
         self.id = UUID()
         self.profileId = profileId
@@ -62,6 +78,6 @@ final class SaveEntry {
     }
 
     var signedAmount: Double {
-        kind == .gave ? -abs(amount) : abs(amount)
+        kind.reducesVault ? -abs(amount) : abs(amount)
     }
 }

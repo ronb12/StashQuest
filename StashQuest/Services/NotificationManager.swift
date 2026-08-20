@@ -1,6 +1,12 @@
 import Foundation
 import UserNotifications
 
+enum NotificationScheduleResult {
+    case disabled
+    case scheduled
+    case denied
+}
+
 enum NotificationManager {
     static func requestAuthorization() async -> Bool {
         let center = UNUserNotificationCenter.current()
@@ -11,13 +17,18 @@ enum NotificationManager {
         }
     }
 
-    static func scheduleReminders(enabled: Bool, hour: Int, minute: Int) async {
+    static func authorizationStatus() async -> UNAuthorizationStatus {
+        await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+    }
+
+    @discardableResult
+    static func scheduleReminders(enabled: Bool, hour: Int, minute: Int) async -> NotificationScheduleResult {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
-        guard enabled else { return }
+        guard enabled else { return .disabled }
 
         let granted = await requestAuthorization()
-        guard granted else { return }
+        guard granted else { return .denied }
 
         let reminders: [(id: String, title: String, body: String, weekday: Int?)] = [
             ("allowance", "Allowance day", "Time to stash at least $1 in the piggy!", nil),
@@ -42,5 +53,6 @@ enum NotificationManager {
             let request = UNNotificationRequest(identifier: reminder.id, content: content, trigger: trigger)
             try? await center.add(request)
         }
+        return .scheduled
     }
 }

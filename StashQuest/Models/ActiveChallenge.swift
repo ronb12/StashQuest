@@ -15,6 +15,7 @@ final class ActiveChallenge {
     var startedAt: Date
     var targetAmount: Double?
     var statusRaw: String
+    var checkedSlotsRaw: String
 
     init(profileId: UUID, challengeId: String, targetAmount: Double? = nil) {
         self.id = UUID()
@@ -23,11 +24,17 @@ final class ActiveChallenge {
         self.startedAt = Date()
         self.targetAmount = targetAmount
         self.statusRaw = ChallengeStatus.active.rawValue
+        self.checkedSlotsRaw = ""
     }
 
     var status: ChallengeStatus {
         get { ChallengeStatus(rawValue: statusRaw) ?? .active }
         set { statusRaw = newValue.rawValue }
+    }
+
+    var checkedSlots: Set<Int> {
+        get { ChallengeChecklistHelper.parseSlots(checkedSlotsRaw) }
+        set { checkedSlotsRaw = ChallengeChecklistHelper.serializeSlots(newValue) }
     }
 }
 

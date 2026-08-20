@@ -9,14 +9,23 @@ struct HomeView: View {
     @Query(filter: #Predicate<ActiveChallenge> { $0.statusRaw == "active" })
     private var activeChallenges: [ActiveChallenge]
 
-    @State private var showLogSheet = false
+    @State private var logMoneyRequest: LogMoneySheetRequest?
     @State private var celebrationMessage: String?
     @State private var celebrationAmount: Double = 0
+    @State private var outflowMessage: String?
+    @State private var outflowAmount: Double = 0
+    @State private var outflowKind: SaveKind = .spent
     @State private var confettiTrigger = 0
+    @State private var showGiveDonationBanner = false
+
+    private var familyGoalSummaries: [(challenge: Challenge, goal: Double, logged: Double, progress: Double)] {
+        SavingsCalculator.activeFamilyGoalSummaries(activeChallenges: activeChallenges, entries: entries)
+    }
 
     private var selectedProfile: Profile? {
-        if let id = settings.selectedProfileId {
-            return profiles.first { $0.id == id }
+        if let id = settings.selectedProfileId,
+           let match = profiles.first(where: { $0.id == id }) {
+            return match
         }
         return profiles.first
     }
@@ -26,59 +35,167 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     familyHeader
+
+                    if !familyGoalSummaries.isEmpty {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Family goals")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            ForEach(familyGoalSummaries, id: \.challenge.id) { summary in
+                                FamilyGoalCard(
+                                    challenge: summary.challenge,
+                                    goal: summary.goal,
+                                    logged: summary.logged,
+                                    progress: summary.progress
+                                )
+                                .padding(.horizontal)
+                            }
+                        }
+                    }
+
                     ProfileChipBar(profiles: profiles, selectedProfileId: $settings.selectedProfileId)
 
                     if let profile = selectedProfile {
                         profileSection(profile)
+                            .id(profile.id)
+                            .transition(.asymmetric(
+                                insertion: .move(edge: .trailing).combined(with: .opacity),
+                                removal: .move(edge: .leading).combined(with: .opacity)
+                            ))
                     }
 
                     if let celebrationMessage {
-                        CelebrationBanner(message: celebrationMessage, amount: celebrationAmount)
-                            .transition(.move(edge: .top).combined(with: .opacity))
+                        ZStack(alignment: .top) {
+                            CelebrationBanner(message: celebrationMessage, amount: celebrationAmount)
+                            ConfettiView(trigger: confettiTrigger)
+                                .frame(maxWidth: .infinity, maxHeight: 100)
+                                .clipped()
+                                .allowsHitTesting(false)
+                        }
+                        .transition(.scale(scale: 0.92).combined(with: .opacity))
+                        .padding(.horizontal)
+                    }
+
+                    if showGiveDonationBanner {
+                        GiveDonationBanner()
+                            .padding(.horizontal)
+                            .transition(.opacity)
+                    }
+
+                    if let outflowMessage {
+                        OutflowBanner(message: outflowMessage, amount: outflowAmount, kind: outflowKind)
+                            .transition(.scale(scale: 0.92).combined(with: .opacity))
+                            .padding(.horizontal)
                     }
                 }
                 .padding(.vertical)
-            }
-            .overlay(alignment: .top) {
-                ConfettiView(trigger: confettiTrigger)
-                    .frame(maxWidth: .infinity, maxHeight: 200)
+                .animation(AppAnimations.smooth, value: settings.selectedProfileId)
+                .animation(AppAnimations.bouncy, value: celebrationMessage)
+                .animation(AppAnimations.gentle, value: outflowMessage)
             }
             .navigationTitle("Home")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Log a save") { showLogSheet = true }
+                    Button("Log money") { openLogMoney() }
                         .fontWeight(.semibold)
+                        .disabled(selectedProfile == nil)
+                        .accessibilityIdentifier("logMoneyOpenButton")
                 }
             }
-            .sheet(isPresented: $showLogSheet) {
-                if let profile = selectedProfile {
-                    LogSaveSheet(
-                        profile: profile,
-                        profiles: profiles,
-                        settings: settings,
-                        onSaved: { entry, message in
+            .sheet(item: $logMoneyRequest) { request in
+                LogSaveSheet(
+                    profile: request.profile,
+                    profiles: profiles,
+                    settings: settings,
+                    onSaved: { entry, message in
+                        if entry.kind == .gave && SavingsCalculator.isGiveALittleActive(activeChallenges: activeChallenges) {
+                            withAnimation(AppAnimations.gentle) {
+                                showGiveDonationBanner = true
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                withAnimation(AppAnimations.gentle) {
+                                    showGiveDonationBanner = false
+                                }
+                            }
+                        }
+                        if entry.kind.reducesVault {
+                            showOutflowNotice(message: message, amount: entry.amount, kind: entry.kind)
+                        } else {
                             showCelebration(message: message, amount: entry.amount)
                         }
-                    )
-                }
+                    }
+                )
+            }
+            .onAppear {
+                healSelectedProfileIfNeeded()
+            }
+            .onChange(of: profiles.map(\.id)) { _, _ in
+                healSelectedProfileIfNeeded()
             }
         }
+    }
+
+    private func openLogMoney() {
+        healSelectedProfileIfNeeded()
+        guard let profile = selectedProfile else { return }
+        logMoneyRequest = LogMoneySheetRequest(profile: profile)
+    }
+
+    private func healSelectedProfileIfNeeded() {
+        if let id = settings.selectedProfileId,
+           profiles.contains(where: { $0.id == id }) {
+            return
+        }
+        settings.selectedProfileId = profiles.first?.id
+    }
+
+    private var familyTotal: Double {
+        SavingsCalculator.familyTotal(entries: entries)
     }
 
     private var familyHeader: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("\(settings.familyDisplayName) Stash Quest")
                 .font(.title2.bold())
-            Text("Family total: \(SavingsCalculator.formatCurrency(SavingsCalculator.familyTotal(entries: entries)))")
-                .font(.headline)
-                .foregroundStyle(.teal)
+            HStack(spacing: 6) {
+                Text("Family total:")
+                    .font(.headline)
+                AnimatedCurrencyText(
+                    amount: familyTotal,
+                    font: .headline.bold(),
+                    color: .teal,
+                    accentColor: .teal
+                )
+            }
             let thisWeek = SavingsCalculator.weekTotal(entries: entries)
             let lastWeek = SavingsCalculator.lastWeekTotal(entries: entries)
-            Text("This week \(SavingsCalculator.formatCurrency(thisWeek)) · Last week \(SavingsCalculator.formatCurrency(lastWeek))")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            HStack(alignment: .firstTextBaseline, spacing: 20) {
+                weekStatColumn(title: "This week", amount: thisWeek, emphasizeNegative: true)
+                weekStatColumn(title: "Last week", amount: lastWeek, emphasizeNegative: false)
+            }
         }
         .padding(.horizontal)
+    }
+
+    private func weekStatColumn(title: String, amount: Double, emphasizeNegative: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(SavingsCalculator.formatCurrency(amount))
+                .font(.caption.bold())
+                .foregroundStyle(weekAmountColor(amount, emphasizeNegative: emphasizeNegative))
+                .monospacedDigit()
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+        }
+    }
+
+    private func weekAmountColor(_ amount: Double, emphasizeNegative: Bool) -> Color {
+        if emphasizeNegative && amount < 0 {
+            return .orange
+        }
+        return amount == 0 ? .secondary : .primary
     }
 
     @ViewBuilder
@@ -98,13 +215,19 @@ struct HomeView: View {
             .padding(.horizontal)
 
             HStack {
-                Label("\(streak) day streak", systemImage: "flame.fill")
+                Label("\(streak) day savings streak", systemImage: "flame.fill")
                     .font(.subheadline)
                     .foregroundStyle(.orange)
+                    .symbolEffect(.pulse, options: streak > 0 ? .repeating : .default, value: streak)
                 Spacer()
-                Text(profile.kind == .kid ? "In the piggy" : "Total saved")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(profile.kind == .kid ? "In the piggy" : "Total saved")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(SavingsCalculator.formatCurrency(total))
+                        .font(.caption.bold())
+                        .monospacedDigit()
+                }
             }
             .padding(.horizontal)
 
@@ -113,7 +236,7 @@ struct HomeView: View {
                     Text("Active challenges")
                         .font(.headline)
                         .padding(.horizontal)
-                    ForEach(profileActive, id: \.id) { active in
+                    ForEach(Array(profileActive.enumerated()), id: \.element.id) { index, active in
                         if let challenge = ChallengeCatalog.challenge(id: active.challengeId) {
                             NavigationLink {
                                 ChallengeDetailView(challenge: challenge, profile: profile, settings: settings)
@@ -127,12 +250,35 @@ struct HomeView: View {
                             }
                             .buttonStyle(.plain)
                             .padding(.horizontal)
+                            .staggeredAppear(index: index)
                         }
                     }
                 }
             }
 
             matchableKidEntriesSection(for: profile)
+            kidMatchBannerSection(for: profile)
+        }
+    }
+
+    @ViewBuilder
+    private func kidMatchBannerSection(for profile: Profile) -> some View {
+        if profile.kind == .kid {
+            let unmatched = entries.filter {
+                ParentMatchRules.entryEligibleForMatch(
+                    $0,
+                    entries: entries,
+                    activeChallenges: activeChallenges,
+                    profiles: profiles
+                ) && $0.profileId == profile.id
+            }
+            if let latest = unmatched.first {
+                KidMatchBanner(
+                    stashAmount: latest.amount,
+                    remainingMatches: ParentMatchRules.remainingWeeklyMatches(for: profile.id, entries: entries)
+                )
+                .padding(.horizontal)
+            }
         }
     }
 
@@ -141,10 +287,13 @@ struct HomeView: View {
         if profile.kind == .adult {
             let kidProfiles = profiles.filter { $0.kind == .kid }
             let unmatchedKidStashes = entries.filter { entry in
-                entry.kind == .stashed &&
-                !entry.isParentMatch &&
                 kidProfiles.contains(where: { $0.id == entry.profileId }) &&
-                !entries.contains(where: { $0.matchedFromEntryId == entry.id })
+                ParentMatchRules.entryEligibleForMatch(
+                    entry,
+                    entries: entries,
+                    activeChallenges: activeChallenges,
+                    profiles: profiles
+                )
             }
 
             if !unmatchedKidStashes.isEmpty {
@@ -158,7 +307,9 @@ struct HomeView: View {
                                 kidEntry: kidEntry,
                                 kid: kid,
                                 adult: profile,
-                                settings: settings,
+                                entries: entries,
+                                activeChallenges: activeChallenges,
+                                profiles: profiles,
                                 onMatched: { amount in
                                     showCelebration(message: "Matched \(kid.name)!", amount: amount)
                                 }
@@ -172,11 +323,31 @@ struct HomeView: View {
     }
 
     private func showCelebration(message: String, amount: Double) {
-        celebrationMessage = message
-        celebrationAmount = amount
+        HapticFeedback.success()
+        withAnimation(AppAnimations.bouncy) {
+            celebrationMessage = message
+            celebrationAmount = amount
+            outflowMessage = nil
+        }
         confettiTrigger += 1
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            withAnimation { celebrationMessage = nil }
+            withAnimation(AppAnimations.gentle) {
+                celebrationMessage = nil
+            }
+        }
+    }
+
+    private func showOutflowNotice(message: String, amount: Double, kind: SaveKind) {
+        withAnimation(AppAnimations.gentle) {
+            outflowMessage = message
+            outflowAmount = amount
+            outflowKind = kind
+            celebrationMessage = nil
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            withAnimation(AppAnimations.gentle) {
+                outflowMessage = nil
+            }
         }
     }
 }
@@ -188,12 +359,22 @@ struct ActiveChallengeRow: View {
     let profile: Profile
 
     var body: some View {
-        let progress = SavingsCalculator.challengeProgress(
-            entries: entries,
-            profileId: profile.id,
-            challengeId: challenge.id,
-            goal: active.targetAmount ?? challenge.goalAmount
-        )
+        let goal = active.targetAmount ?? challenge.goalAmount
+        let isFamilyGoal = challenge.isFamilyGoal
+        let logged = isFamilyGoal
+            ? SavingsCalculator.familyChallengeTotal(entries: entries, challengeId: challenge.id)
+            : entries
+                .filter { $0.profileId == profile.id && $0.challengeId == challenge.id }
+                .reduce(0) { $0 + $1.signedAmount }
+        let progress = isFamilyGoal
+            ? SavingsCalculator.familyChallengeProgress(entries: entries, challengeId: challenge.id, goal: goal)
+            : SavingsCalculator.challengeProgress(
+                entries: entries,
+                profileId: profile.id,
+                challengeId: challenge.id,
+                goal: goal
+            )
+
         VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Text(challenge.name)
@@ -203,8 +384,35 @@ struct ActiveChallengeRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            ProgressView(value: progress)
-                .tint(profile.color)
+            if let goal, goal > 0 {
+                ProgressView(value: progress)
+                    .tint(profile.color)
+                    .animation(AppAnimations.smooth, value: progress)
+                Text("\(SavingsCalculator.formatCurrency(logged)) of \(SavingsCalculator.formatCurrency(goal))\(isFamilyGoal ? " combined" : "")")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            let paperChecked = active.checkedSlots.count
+            let paperTotal = challenge.checklistSlotCount
+            if paperTotal > 0 {
+                HStack(spacing: 4) {
+                    Image(systemName: challenge.checklistMarkedIcon)
+                        .font(.caption2)
+                        .foregroundStyle(profile.color)
+                    Text("Paper \(paperChecked)/\(paperTotal)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            if goal == nil || goal == 0 {
+                if paperChecked == 0 {
+                    Text("Logged: \(SavingsCalculator.formatCurrency(logged))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
             Text(challenge.rule)
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -217,46 +425,95 @@ struct ActiveChallengeRow: View {
 
 struct ParentMatchRow: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \SaveEntry.date, order: .reverse) private var entries: [SaveEntry]
 
     let kidEntry: SaveEntry
     let kid: Profile
     let adult: Profile
-    let settings: AppSettings
+    let entries: [SaveEntry]
+    let activeChallenges: [ActiveChallenge]
+    let profiles: [Profile]
     let onMatched: (Double) -> Void
 
+    @State private var matchPressed = false
+
+    private var remaining: Int {
+        ParentMatchRules.remainingWeeklyMatches(for: kid.id, entries: entries)
+    }
+
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("\(kid.name) stashed \(SavingsCalculator.formatCurrency(kidEntry.amount))")
-                    .font(.subheadline)
-                Text(kidEntry.note.isEmpty ? "Tap Match to add the same amount" : kidEntry.note)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(kid.name) stashed \(SavingsCalculator.formatCurrency(kidEntry.amount))")
+                        .font(.subheadline)
+                    Text(kidEntry.note.isEmpty ? "Add the same amount to their piggy" : kidEntry.note)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("\(remaining) match\(remaining == 1 ? "" : "es") left this week")
+                        .font(.caption2)
+                        .foregroundStyle(.orange)
+                }
+                Spacer()
             }
-            Spacer()
-            Button("Match") {
-                performMatch()
+            HStack(spacing: 8) {
+                Button("Match") {
+                    performMatch(fraction: 1)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.orange)
+                .accessibilityIdentifier("parentMatchFullButton")
+
+                Button("Half") {
+                    performMatch(fraction: 0.5)
+                }
+                .buttonStyle(.bordered)
+                .tint(.orange)
+                .accessibilityIdentifier("parentMatchHalfButton")
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.orange)
         }
         .padding()
         .background(Color.orange.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+        .scaleEffect(matchPressed ? 0.98 : 1)
+        .transition(.scale.combined(with: .opacity))
     }
 
-    private func performMatch() {
-        let amount = kidEntry.amount
+    private func performMatch(fraction: Double) {
+        guard ParentMatchRules.entryEligibleForMatch(
+            kidEntry,
+            entries: entries,
+            activeChallenges: activeChallenges,
+            profiles: profiles
+        ), remaining > 0 else { return }
+
+        withAnimation(AppAnimations.snappy) { matchPressed = true }
+        HapticFeedback.success()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            matchPressed = false
+        }
+        let amount = max(0.01, (kidEntry.amount * fraction * 100).rounded() / 100)
         let matchEntry = SaveEntry(
             profileId: kid.id,
             amount: amount,
             kind: .stashed,
-            note: "Parent Match from \(adult.name)",
+            note: fraction >= 1
+                ? "Parent Match from \(adult.name)"
+                : "Half Match from \(adult.name)",
             challengeId: "family-parent-match",
             matchedFromEntryId: kidEntry.id,
             isParentMatch: true
         )
         modelContext.insert(matchEntry)
+        modelContext.commitSave()
         onMatched(amount)
+    }
+}
+
+private struct LogMoneySheetRequest: Identifiable {
+    let id: UUID
+    let profile: Profile
+
+    init(profile: Profile) {
+        self.id = profile.id
+        self.profile = profile
     }
 }

@@ -22,3 +22,15 @@ xcodebuild -scheme StashQuest -destination 'platform=iOS Simulator,id=E6D74279-E
 - Parent Match for kid savings
 - Stamps, streaks, vault milestones, and weekly recap
 - Optional local reminders (allowance, Coin Friday, $5 Friday)
+- Light, dark, and system appearance
+
+## App Store Connect URLs
+
+Use these GitHub pages in App Store Connect (not linked from the app):
+
+- **Marketing URL:** https://github.com/ronb12/StashQuest
+- **Privacy Policy:** https://github.com/ronb12/StashQuest/blob/master/PRIVACY.md
+- **Terms of Service:** https://github.com/ronb12/StashQuest/blob/master/TERMS.md
+- **Support:** https://github.com/ronb12/StashQuest/blob/master/SUPPORT.md
+
+In-app copies live under **You → Legal & Support**.

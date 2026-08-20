@@ -5,12 +5,6 @@ enum LegalDocuments {
     static let appName = "Stash Quest"
     static let contactEmail = "support@bradleyvirtual.com"
 
-    private static let repoBase = "https://github.com/ronb12/StashQuest/blob/master"
-
-    static let privacyPolicyURL = URL(string: "\(repoBase)/PRIVACY.md")!
-    static let termsOfServiceURL = URL(string: "\(repoBase)/TERMS.md")!
-    static let supportURL = URL(string: "\(repoBase)/SUPPORT.md")!
-
     static let privacyPolicySections: [(title: String, body: String)] = [
         (
             "Overview",
@@ -134,6 +128,52 @@ enum LegalDocuments {
             "Contact",
             """
             Questions about these terms? Email \(contactEmail).
+            """
+        ),
+    ]
+
+    static let supportSections: [(title: String, body: String)] = [
+        (
+            "Contact",
+            """
+            For help, feedback, or bug reports, email \(contactEmail). We typically respond within a few business days.
+            """
+        ),
+        (
+            "Does Stash Quest connect to my bank?",
+            """
+            No. Stash Quest does not link to banks or payment apps. You manually log skips and stashes in real dollars.
+            """
+        ),
+        (
+            "Where is my data stored?",
+            """
+            On your iPhone or iPad only. We do not sync your savings data to our servers.
+            """
+        ),
+        (
+            "Can I use Stash Quest for my whole family?",
+            """
+            Yes. Add grown-up and kid profiles on the You tab. Each person has their own vault. Parent Match lets a grown-up double a kid's stash.
+            """
+        ),
+        (
+            "How do I delete my data?",
+            """
+            Delete individual entries in Activity, remove profiles on You, or delete the app from your device. All local data is removed with the app.
+            """
+        ),
+        (
+            "Reminders are not working",
+            """
+            1. Open You and turn on Savings reminders.
+            2. Open iOS Settings → Stash Quest → Notifications → allow alerts.
+            """
+        ),
+        (
+            "Report a bug",
+            """
+            Email \(contactEmail) with your device model, iOS version, what you were doing when the issue happened, and screenshots if possible.
             """
         ),
     ]
